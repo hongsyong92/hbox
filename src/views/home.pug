@@ -1,7 +1,10 @@
 extends base.pug
-
-block head
-  title Home | HBOX
+include mixins/video
 
 block content
-  h1 Home!
+  h2 인기 급상승 동영상
+
+  each item in videos
+    +video(item)
+  else
+    p 아이템이 없습니다.

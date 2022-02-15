@@ -1,0 +1,8 @@
+mixin video(info)
+  div
+    h4=info.title
+    ul
+      li #{info.rating}/5
+      li #{info.comments}개의 댓글
+      li #{info.createdAt}에 작성됨.
+      li #{info.views} 조회수
