@@ -4,7 +4,7 @@ include mixins/video
 block content
   h2 인기 급상승 동영상
 
-  each item in videos
-    +video(item)
+  each video in videos
+    +video(video)
   else
     p 아이템이 없습니다.
