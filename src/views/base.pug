@@ -6,6 +6,12 @@ html(lang='ko')
   body
     header
       h1=pageTitle
+      nav
+        ul
+          li
+            a(href="/") 홈
+          li
+            a(href="/videos/upload") 업로드
     main
       block content
   include partials/footer.pug
