@@ -11,6 +11,14 @@ const videoSchema = new mongoose.Schema({
   },
 });
 
+videoSchema.static("formatHashtags", function (hashtags) {
+  return hashtags
+    .split(",")
+    .map((word) => (word.startsWith("#") ? word : `#${word}`));
+});
+
+// middleware 는 항상 모델 만들어지기 전에 작성할 것
+
 const Video = mongoose.model("Video", videoSchema);
 
 export default Video;
