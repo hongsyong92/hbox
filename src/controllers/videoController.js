@@ -1,9 +1,6 @@
 import Video from "../models/Video";
 
 export const home = async (req, res) => {
-  // Video.find({}, (error, videos) => {
-  //   return res.render("home", { pageTitle: "Home", videos });
-  // });
   try {
     const videos = await Video.find({});
     return res.render("home", { pageTitle: "Home", videos });
@@ -11,30 +8,66 @@ export const home = async (req, res) => {
     return res.render("server-error");
   }
 };
-export const watch = (req, res) => {
+
+export const watch = async (req, res) => {
   const { id } = req.params;
+  const video = await Video.findById(id);
+  if (!video) {
+    return res.render("404", { pageTitle: "영상을 찾을 수 없습니다." });
+  }
   return res.render("watch", {
-    pageTitle: `영상 시청 중`,
+    pageTitle: video.title,
+    video,
   });
 };
-export const getEdit = (req, res) => {
+
+export const getEdit = async (req, res) => {
   const { id } = req.params;
+  const video = await Video.findById(id);
+  if (!video) {
+    return res.render("404", { pageTitle: "영상을 찾을 수 없습니다." });
+  }
   return res.render("edit", {
-    pageTitle: `영상 수정 중`,
+    pageTitle: `${video.title} 수정 중`,
+    video,
   });
 };
-export const postEdit = (req, res) => {
+export const postEdit = async (req, res) => {
   const { id } = req.params;
-  const { title } = req.body;
+  const { title, description, hashtags } = req.body;
+  const video = await Video.exists({ _id: id });
+  if (!video) {
+    return res.render("404", { pageTitle: "영상을 찾을 수 없습니다." });
+  }
+  await Video.findByIdAndUpdate(id, {
+    title,
+    description,
+    hashtags: hashtags
+      .split(",")
+      .map((word) => (word.startsWith("#") ? word : `#${word}`)),
+  });
   return res.redirect(`/videos/${id}`);
 };
 
 export const getUpload = (req, res) => {
   return res.render("upload", { pageTitle: "업로드" });
 };
-export const postUpload = (req, res) => {
-  const { title } = req.body;
-  return res.redirect(`/`);
+
+export const postUpload = async (req, res) => {
+  const { title, description, hashtags } = req.body;
+  try {
+    await Video.create({
+      title,
+      description,
+      hashtags: hashtags.split(",").map((word) => `#${word}`),
+    });
+    return res.redirect(`/`);
+  } catch (error) {
+    return res.render("upload", {
+      pageTitle: "업로드",
+      errorMessage: error._message,
+    });
+  }
 };
 
 export const search = (req, res) => res.send("Search Videos");

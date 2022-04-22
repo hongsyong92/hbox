@@ -3,5 +3,7 @@ extends base.pug
 block content
   h4 영상 속성 수정
   form(method="POST")
-    input(name="title", placeholder="영상 제목", value=video.title, required)
+    input(type="text", name="title", placeholder="영상 제목", value=video.title, required)
+    input(type="text", name="description", placeholder="설명", required, minlength=20, value=video.description)
+    input(type="text", name="hashtags", placeholder="태그, 쉼표로 구분해주세요.", required, value=video.hashtags.join())
     input(type="submit", value="저장")
