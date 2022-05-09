@@ -37,7 +37,9 @@ export const postEdit = async (req, res) => {
   const { title, description, hashtags } = req.body;
   const video = await Video.exists({ _id: id });
   if (!video) {
-    return res.render("404", { pageTitle: "영상을 찾을 수 없습니다." });
+    return res
+      .status(404)
+      .render("404", { pageTitle: "영상을 찾을 수 없습니다." });
   }
   await Video.findByIdAndUpdate(id, {
     title,
@@ -61,7 +63,7 @@ export const postUpload = async (req, res) => {
     });
     return res.redirect(`/`);
   } catch (error) {
-    return res.render("upload", {
+    return res.status(404).render("upload", {
       pageTitle: "업로드",
       errorMessage: error._message,
     });
