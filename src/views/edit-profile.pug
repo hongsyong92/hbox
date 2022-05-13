@@ -1,0 +1,9 @@
+extends base.pug
+
+block content
+  form(method="POST")
+    input(name="name", type="text", value=loggedInUser.name, required, placeholder="이름")
+    input(name="email", type="email", value=loggedInUser.email, required, placeholder="이메일")
+    input(name="username", type="text", value=loggedInUser.username, required, placeholder="아이디")
+    input(name="location", type="text", value=loggedInUser.location, required, placeholder="지역")
+    input(type="submit" value="프로필 업데이트")
