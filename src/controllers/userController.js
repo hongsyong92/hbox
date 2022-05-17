@@ -162,19 +162,79 @@ export const getEdit = (req, res) => {
   return res.render("edit-profile", { pageTitle: "프로필 수정" });
 };
 export const postEdit = async (req, res) => {
-  const { _id } = req.session.user;
-  const { name, email, usernmae, location } = req.body;
+  const {
+    _id,
+    avatarUrl,
+    email: sessionEmail,
+    username: sessionUsername,
+  } = req.session.user;
+  const { name, email, username, location } = req.body;
+  const { file } = req;
+
+  let duplicateUserParams = [];
+  if (sessionEmail !== email) {
+    duplicateUserParams.push({ email });
+  }
+  if (sessionUsername !== username) {
+    duplicateUserParams.push({ username });
+  }
+  if (duplicateUserParams.length > 0) {
+    const duplicateUser = await User.findOne({
+      $or: duplicateUserParams,
+    });
+    if (duplicateUser && duplicateUser._id.toString() !== _id) {
+      return res.status(400).render("edit-profile", {
+        pageTitle: "프로필 수정",
+        errorMessage: "이미 존재하는 아이디/이메일 입니다.",
+      });
+    }
+  }
+
   const updatedUser = await User.findByIdAndUpdate(
     _id,
     {
+      avatarUrl: file ? file.path : avatarUrl,
       name,
       email,
-      usernmae,
+      username,
       location,
     },
     { new: true }
   );
   req.session.user = updatedUser;
   return res.redirect("/users/edit");
+  // 만약 user가 값 변경없이 업데이트 버튼을 누르거나 다른 유저와 같은 정보로 변경하려고 할 때의 케이스 처리 추가해야함
 };
+
+export const getChangePassword = (req, res) => {
+  if (req.session.user.socialOnly === true) {
+    return res.redirect("/");
+  }
+  return res.render("users/change-password", { pageTitle: "비밀번호 변경" });
+};
+export const postChangePassword = async (req, res) => {
+  const { _id, password } = req.session.user;
+  const { oldPassword, newPassword, newPasswordConfirmation } = req.body;
+
+  const ok = await bcrypt.compare(oldPassword, password);
+
+  if (!ok) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "비밀번호 변경",
+      errorMessage: "기존 비밀번호가 일치하지 않습니다.",
+    });
+  }
+  if (newPassword !== newPasswordConfirmation) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "비밀번호 변경",
+      errorMessage: "새로운 비밀번호가 일치하지 않습니다.",
+    });
+  }
+  const user = await User.findById(_id);
+  user.password = newPassword;
+  await user.save();
+  req.session.user.password = user.password;
+  return res.redirect("/users/logout");
+};
+
 export const see = (req, res) => res.send("see user");
