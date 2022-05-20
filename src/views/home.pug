@@ -2,9 +2,8 @@ extends base.pug
 include mixins/video
 
 block content
-  h2 인기 급상승 동영상
-
-  each video in videos
-    +video(video)
-  else
-    p 아이템이 없습니다.
+  div.video-grid
+    each video in videos
+      +video(video)
+    else
+      span.empty-message 아이템이 없습니다.

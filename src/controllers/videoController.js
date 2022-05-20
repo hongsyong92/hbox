@@ -2,12 +2,16 @@ import User from "../models/User";
 import Video from "../models/Video";
 
 export const home = async (req, res) => {
-  try {
-    const videos = await Video.find({}).sort({ createdAt: "desc" });
-    return res.render("home", { pageTitle: "Home", videos });
-  } catch {
-    return res.render("server-error");
-  }
+  const videos = await Video.find({})
+    .sort({ createdAt: "desc" })
+    .populate("owner");
+  // try {
+  //   const videos = await Video.find({}).sort({ createdAt: "desc" });
+  //   return res.render("home", { pageTitle: "Home", videos });
+  // } catch {
+  //   return res.render("server-error");
+  // }
+  return res.render("home", { pageTitle: "Home", videos });
 };
 
 export const watch = async (req, res) => {
@@ -111,7 +115,7 @@ export const search = async (req, res) => {
       title: {
         $regex: new RegExp(`${keyword}$`, "i"),
       },
-    });
+    }).populate("owner");
   }
   return res.render("search", { pageTitle: "검색", videos });
 };

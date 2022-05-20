@@ -2,8 +2,17 @@ extends ../base
 include ../mixins/video
 
 block content
-  h1 내가 업로드한 영상
-  each video in user.videos
-    +video(video)
-  else
-    p 업로드한 비디오가 없습니다.
+  div.profile__data
+    if !user.avatarUrl
+      span.profile_emoji ☺️
+    else
+      if user.avatarUrl.includes("https")
+        img.profile_avatar(src=user.avatarUrl, alt="avatar")
+      else
+        img.profile_avatar(src="/" + user.avatarUrl, alt="avatar")
+    h3=user.name
+  div.video-grid
+    each video in user.videos
+      +video(video)
+    else
+      span.empty__message 업로드한 비디오가 없습니다.
