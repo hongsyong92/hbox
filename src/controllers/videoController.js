@@ -34,6 +34,7 @@ export const getEdit = async (req, res) => {
     return res.render("404", { pageTitle: "영상을 찾을 수 없습니다." });
   }
   if (String(video.owner) !== String(_id)) {
+    req.flash("error", "승인 되지 않음");
     return res.status(403).redirect("/");
   }
   return res.render("edit", {
@@ -53,6 +54,7 @@ export const postEdit = async (req, res) => {
       .render("404", { pageTitle: "영상을 찾을 수 없습니다." });
   }
   if (String(video.owner) !== String(_id)) {
+    req.flash("error", "비디오 업로더가 아닙니다.");
     return res.status(403).redirect("/");
   }
   await Video.findByIdAndUpdate(id, {
@@ -60,6 +62,7 @@ export const postEdit = async (req, res) => {
     description,
     hashtags: Video.formatHashtags(hashtags),
   });
+  req.flash("success", "수정 완료");
   return res.redirect(`/videos/${id}`);
 };
 
@@ -118,4 +121,15 @@ export const search = async (req, res) => {
     }).populate("owner");
   }
   return res.render("search", { pageTitle: "검색", videos });
+};
+
+export const registerView = async (req, res) => {
+  const { id } = req.params;
+  const video = await Video.findById(id);
+  if (!video) {
+    return res.sendStatus(404);
+  }
+  video.meta.views = video.meta.views + 1;
+  await video.save();
+  return res.sendStatus(200);
 };
