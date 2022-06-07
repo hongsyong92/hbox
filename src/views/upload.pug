@@ -1,18 +1,19 @@
 extends base.pug
 
 block content
-  div
-    video#preview
-    button#startBtn 녹화 시작
-  if errorMessage 
-    span=errorMessage
-  form(method="POST", enctype="multipart/form-data")
-    label(for="video") 영상 파일
-    input(type="file", accept="video/*", required, id="video", name="video")
-    input(type="text", name="title", placeholder="제목", required, maxlength=80)
-    input(type="text", name="description", placeholder="설명", required, minlength=20)
-    input(type="text", name="hashtags", placeholder="태그, 쉼표로 구분해주세요.", required)
-    input(type="submit", value="업로드하기")
+  div.upload__container
+    div.upload__video
+      video#preview
+      button#startBtn 녹화 시작
+    if errorMessage 
+      span=errorMessage
+    form(method="POST", enctype="multipart/form-data")
+      label(for="video") 영상 파일
+      input(type="file", accept="video/*", required, id="video", name="video")
+      input(type="text", name="title", placeholder="제목", required, maxlength=80)
+      input(type="text", name="description", placeholder="설명", required, minlength=20)
+      input(type="text", name="hashtags", placeholder="태그, 쉼표로 구분해주세요.", required)
+      input(type="submit", value="업로드하기")
 
 block scripts
   script(src="/static/js/recorder.js")
