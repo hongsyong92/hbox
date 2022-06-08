@@ -19,3 +19,16 @@
     }
   }
 }
+.video__comments {
+  display: flex;
+  flex-direction: column;
+  max-width: 320px;
+  width: 100%;
+  margin: 20px auto 0 auto;
+  .video__comment {
+    background-color: white;
+    color: black;
+    margin-bottom: 10px;
+    padding: 10px 25px;
+  }
+}

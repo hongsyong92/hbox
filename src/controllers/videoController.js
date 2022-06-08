@@ -6,18 +6,13 @@ export const home = async (req, res) => {
   const videos = await Video.find({})
     .sort({ createdAt: "desc" })
     .populate("owner");
-  // try {
-  //   const videos = await Video.find({}).sort({ createdAt: "desc" });
-  //   return res.render("home", { pageTitle: "Home", videos });
-  // } catch {
-  //   return res.render("server-error");
-  // }
   return res.render("home", { pageTitle: "Home", videos });
 };
 
 export const watch = async (req, res) => {
   const { id } = req.params;
-  const video = await Video.findById(id).populate("owner");
+  const video = await Video.findById(id).populate("owner").populate("comments");
+  console.log(video);
   if (!video) {
     return res.render("404", { pageTitle: "영상을 찾을 수 없습니다." });
   }
@@ -150,5 +145,13 @@ export const createComment = async (req, res) => {
     owner: user._id,
     video: id,
   });
-  return res.sendStatus(201);
+  video.comments.push(comment._id);
+  video.save();
+  return res.status(201).json({ newCommentId: comment._id });
+};
+
+export const deleteComment = async (req, res) => {
+  const { id } = req.params;
+  const { videoId } = req.body;
+  const { user } = req.session;
 };
