@@ -12,7 +12,7 @@ export const home = async (req, res) => {
 export const watch = async (req, res) => {
   const { id } = req.params;
   const video = await Video.findById(id).populate("owner").populate("comments");
-  console.log(video);
+  // console.log(video);
   if (!video) {
     return res.render("404", { pageTitle: "영상을 찾을 수 없습니다." });
   }
@@ -151,7 +151,21 @@ export const createComment = async (req, res) => {
 };
 
 export const deleteComment = async (req, res) => {
-  const { id } = req.params;
-  const { videoId } = req.body;
-  const { user } = req.session;
+  const { commentId } = req.params;
+  const { _id } = req.session.user;
+
+  const comment = await Comment.findById(commentId).populate("owner");
+  const videoId = comment.video;
+  if (String(_id) !== String(comment.owner._id)) {
+    return res.sendStatus(404);
+  }
+  const video = await Video.findById(videoId);
+  if (!video) {
+    return res.sendStatus(404);
+  }
+  video.comments.splice(video.comments.indexOf(commentId), 1);
+  await video.save();
+  await Comment.findByIdAndDelete(commentId);
+
+  return res.sendStatus(200);
 };

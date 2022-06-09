@@ -357,10 +357,17 @@ form label {
   margin: 20px auto 0 auto;
 }
 .video__comments .video__comment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: white;
   color: black;
   margin-bottom: 10px;
   padding: 10px 25px;
+}
+.video__comments .video__comment .video__delete-comments {
+  display: block;
+  cursor: pointer;
 }
 
 a {
